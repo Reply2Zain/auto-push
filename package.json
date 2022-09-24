@@ -1,0 +1,16 @@
+{
+  "name": "auto-push",
+  "version": "1.0.0",
+  "description": "A program allowing for timed command execution.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node auto-push.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "node-schedule": "^2.1.0"
+  }
+}
