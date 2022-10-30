@@ -19,7 +19,7 @@ if(inputsArray.includes('--help')){
     '-m => minutes\n' +
     '-s => seconds\n' +
     '-c => your command to run \n' +
-    'example command: node auto-push.js -h 1 -m 20 -c \n'
+    'example command: node auto-push.js -h 1 -m 20 -c "cd ../gitProject && git push"\n'
   );
   process.exit(0);
 }
