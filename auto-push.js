@@ -10,6 +10,9 @@ const startTime = Date.now();
 let cmdToRun = '';
 // ex input "-h 2 -m 5 -s 30" (2h 5m 30s)
 const inputsArray = process.argv.slice(2);
+// how long to wait before closing the terminal (in seconds)
+const CLOSE_TERMINAL_TIME = 7;
+
 
 if(inputsArray.includes('--help')){
   console.log(
@@ -47,17 +50,19 @@ current.setHours(current.getHours() + addHour, current.getMinutes() + addMin, cu
 
 console.log(`waiting ${addHour}h ${addMin}m ${addSec}s`);
 schedule.scheduleJob(current, function(){
-  console.log(`running: ${cmdToRun}`);
+  console.log(`[RUNNING] ${cmdToRun}`);
   exec(cmdToRun, (err, output) => {
     if (err) {
-      console.log('there was an error running your command:\n' + err.message);
+      console.log('[ERROR] while running your command:\n' + err.message);
     }
     else if (output) {
-      // note assumes that command takes less than 10 seconds to complete
-      setTimeout(()=> {
-        process.emit('SIGINT');
-      }, 1000);
+      console.log(output);
     }
+    console.log(`closing terminal in ${CLOSE_TERMINAL_TIME} seconds`)
+    // note assumes that command takes less than CLOSE_TERMINAL_TIME (seconds) to complete
+    setTimeout(()=> {
+      process.emit('SIGINT');
+    }, CLOSE_TERMINAL_TIME * 1000);
   });
 });
 
