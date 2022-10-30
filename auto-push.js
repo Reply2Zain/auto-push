@@ -46,10 +46,19 @@ if (addHour + addMin + addSec === 0){
 current.setHours(current.getHours() + addHour, current.getMinutes() + addMin, current.getSeconds() + addSec);
 
 console.log(`waiting ${addHour}h ${addMin}m ${addSec}s`);
-const job = schedule.scheduleJob(current, function(){
+schedule.scheduleJob(current, function(){
   console.log(`running: ${cmdToRun}`);
-  exec(cmdToRun);
-  process.emit('SIGINT');
+  exec(cmdToRun, (err, output) => {
+    if (err) {
+      console.log('there was an error running your command:\n' + err.message);
+    }
+    else if (output) {
+      // note assumes that command takes less than 10 seconds to complete
+      setTimeout(()=> {
+        process.emit('SIGINT');
+      }, 1000);
+    }
+  });
 });
 
 process.on('SIGINT', function () {
