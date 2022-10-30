@@ -7,17 +7,20 @@ const current = new Date();
 // start time in MS
 const startTime = Date.now();
 // the command to run
-let cmdToRun;
+let cmdToRun = '';
 // ex input "-h 2 -m 5 -s 30" (2h 5m 30s)
 const inputsArray = process.argv.slice(2);
 
 if(inputsArray.includes('--help')){
   console.log(
+    'this program runs a custom command after a specified duration\n' +
     'params:\n' +
-    '-h = hours\n' +
-    '-m = minutes\n' +
-    '-s = seconds\n' +
-    '-c = custom cmd (ex: -c cd ../gitProject && git push)');
+    '-h => hours\n' +
+    '-m => minutes\n' +
+    '-s => seconds\n' +
+    '-c => your command to run \n' +
+    'example command: node auto-push.js -h 1 -m 20 -c \n'
+  );
   process.exit(0);
 }
 
