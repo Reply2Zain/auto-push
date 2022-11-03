@@ -115,7 +115,7 @@ process.stdin.on("data", data => {
     console.log(`command: ${cmdToRun}`);
     return;
   }
-  console.log(`waiting ${getTimeRemainingStr()}`);
+  console.log(`waiting${getTimeRemainingStr()}`);
 })
 
 function getTimeRemainingStr() {
