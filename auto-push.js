@@ -10,19 +10,21 @@ const startTime = Date.now();
 let cmdToRun = '';
 // ex input "-h 2 -m 5 -s 30" (2h 5m 30s)
 const inputsArray = process.argv.slice(2);
-// how long to wait before closing the terminal (in seconds)
-const CLOSE_TERMINAL_TIME = 7;
+// how long to wait before closing the terminal (when there is no more output being received from the command)
+const CLOSE_TERMINAL_TIME = 5;
 
 
 if(inputsArray.includes('--help')){
   console.log(
     'this program runs a custom command after a specified duration\n' +
     'params:\n' +
+    '-d => days\n' +
     '-h => hours\n' +
     '-m => minutes\n' +
     '-s => seconds\n' +
     '-c => your command to run \n' +
-    'example command: node auto-push.js -h 1 -m 20 -c "cd ../gitProject && git push"\n'
+    'example command: node auto-push.js -h 1 -m 20 -c "cd ../gitProject && git push"\n' +
+    'explanation: this will wait 1h 20m before executing the command'
   );
   process.exit(0);
 }
@@ -37,28 +39,29 @@ if (customCmd){
 }
 
 
+let addDay = getFlagVariableAsNum('-d', inputsArray) || 0;
 let addHour = getFlagVariableAsNum('-h', inputsArray) || 0;
 let addMin = getFlagVariableAsNum('-m', inputsArray) || 0;
 let addSec = getFlagVariableAsNum('-s', inputsArray) || 0;
-if (addHour + addMin + addSec === 0){
+if (addDay + addHour + addMin + addSec === 0){
   console.log('no time set, exiting...');
   process.exit(0);
 } else {
   console.log(`command: ${cmdToRun}`);
 }
-current.setHours(current.getHours() + addHour, current.getMinutes() + addMin, current.getSeconds() + addSec);
+current.setHours(current.getHours() + (addHour + (24 * addDay)), current.getMinutes() + addMin, current.getSeconds() + addSec);
 
-console.log(`waiting ${addHour}h ${addMin}m ${addSec}s`);
+console.log(`waiting${getTimeRemainingStr()} (press enter to view time left)`);
 schedule.scheduleJob(current, function(){
-  console.log(`[RUNNING] ${cmdToRun}`);
+  console.log(`running command: ${cmdToRun}`);
   exec(cmdToRun, (err, output) => {
     if (err) {
-      console.log('[ERROR] while running your command:\n' + err.message);
+      console.log('[ERROR]\n' + err.message);
     }
     else if (output) {
       console.log(output);
     }
-    console.log(`closing terminal in ${CLOSE_TERMINAL_TIME} seconds`)
+    console.log(`closing terminal... (${CLOSE_TERMINAL_TIME} seconds)`)
     // note assumes that command takes less than CLOSE_TERMINAL_TIME (seconds) to complete
     setTimeout(()=> {
       process.emit('SIGINT');
@@ -112,13 +115,26 @@ process.stdin.on("data", data => {
     console.log(`command: ${cmdToRun}`);
     return;
   }
+  console.log(`waiting ${getTimeRemainingStr()}`);
+})
+
+function getTimeRemainingStr() {
   const timeElapsedMS = Date.now() - startTime;
   const timeElapsedSec = (timeElapsedMS / 1000);
-  const totalTimeSec = (addHour * Math.pow(60,2)) + (addMin * 60) + addSec;
+  const totalTimeSec = (addDay * Math.pow(60,2) * 24) + (addHour * Math.pow(60,2)) + (addMin * 60) + addSec;
   const timeRemainingSec = totalTimeSec - timeElapsedSec
-  // is floored
-  const timeRemainingHourOnly = Math.floor(timeRemainingSec / Math.pow(60,2));
-  const timeRemainingMinOnly = Math.floor(timeRemainingSec / Math.pow(60,1) % 60);
-  const timeRemainingSecOnly = Math.floor(timeRemainingSec % 60);
-  console.log(`waiting ${timeRemainingHourOnly}h ${timeRemainingMinOnly}m ${timeRemainingSecOnly}s`);
-})
+  // time remaining days only
+  const timeDayOnly = Math.floor(timeRemainingSec / (Math.pow(60,2) * 24));
+  // time remaining hours only
+  const timeHourOnly = Math.floor(timeRemainingSec / Math.pow(60,2) % 24);
+  // time remaining minutes only
+  const timeMinOnly = Math.floor(timeRemainingSec / Math.pow(60,1) % 60);
+  // time remaining seconds only
+  const timeSecOnly = Math.floor(timeRemainingSec % 60);
+  return `${tFlagStr('d', timeDayOnly)}${tFlagStr('h', timeHourOnly)}${tFlagStr('m', timeMinOnly)} ${timeSecOnly}s`
+}
+
+// display time per flag
+function tFlagStr(flag, time) {
+  return `${time ? ` ${time}${flag}` : ''}`;
+}
