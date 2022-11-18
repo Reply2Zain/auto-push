@@ -1,17 +1,19 @@
 #!/usr/bin/env node
-const schedule = require('node-schedule');
-const {exec} = require('child_process');
+import * as schedule from "node-schedule";
+
+import {exec} from "child_process";
+
 
 // current date
-const current = new Date();
+const current: Date = new Date();
 // start time in MS
-const startTime = Date.now();
+const startTime: number = Date.now();
 // the command to run
-let cmdToRun = '';
+let cmdToRun: string = '';
 // ex input "-h 2 -m 5 -s 30" (2h 5m 30s)
-const inputsArray = process.argv.slice(2);
+const inputsArray: string[] = process.argv.slice(2);
 // how long to wait before closing the terminal (when there is no more output being received from the command)
-const CLOSE_TERMINAL_TIME = 5;
+const CLOSE_TERMINAL_TIME: number = 5;
 
 
 if(inputsArray.includes('--help')){
@@ -23,7 +25,7 @@ if(inputsArray.includes('--help')){
     '-m => minutes\n' +
     '-s => seconds\n' +
     '-c => your command to run \n' +
-    'example command: node auto-push.js -h 1 -m 20 -c "cd ../gitProject && git push"\n' +
+    'example command: node scriptScheduler.js -h 1 -m 20 -c "cd ../gitProject && git push"\n' +
     'explanation: this will wait 1h 20m before executing the command'
   );
   process.exit(0);
@@ -131,6 +133,7 @@ function getTimeRemainingStr() {
   const timeMinOnly = Math.floor(timeRemainingSec / Math.pow(60,1) % 60);
   // time remaining seconds only
   const timeSecOnly = Math.floor(timeRemainingSec % 60);
+  if (timeSecOnly < 0) return 'to exit...';
   return `${tFlagStr('d', timeDayOnly)}${tFlagStr('h', timeHourOnly)}${tFlagStr('m', timeMinOnly)} ${timeSecOnly}s`
 }
 
