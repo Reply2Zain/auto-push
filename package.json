@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node built/auto-push.js"
+    "start": "node built/auto-push.js",
+    "postinstall": "tsc"
   },
   "keywords": [],
   "author": "",
