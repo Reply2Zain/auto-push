@@ -1,4 +1,11 @@
 #!/bin/bash
 
+MAIN_FILE="./dist/scriptScheduler.js"
 
-./built/scriptScheduler.js "$@"
+if test -d "./dist"; then
+    if test -f "$MAIN_FILE"; then
+      npm start -- "$@"
+      exit 0
+    fi
+fi
+echo "dist directory does not exist (try 'tsc')"

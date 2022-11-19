@@ -9,11 +9,11 @@ const current: Date = new Date();
 // start time in MS
 const startTime: number = Date.now();
 // the command to run
-let cmdToRun: string = '';
+let cmdToRun = '';
 // ex input "-h 2 -m 5 -s 30" (2h 5m 30s)
 const inputsArray: string[] = process.argv.slice(2);
 // how long to wait before closing the terminal (when there is no more output being received from the command)
-const CLOSE_TERMINAL_TIME: number = 5;
+const CLOSE_TERMINAL_TIME = 5;
 
 
 if(inputsArray.includes('--help')){
@@ -41,10 +41,10 @@ if (customCmd){
 }
 
 
-let addDay = getFlagVariableAsNum('-d', inputsArray) || 0;
-let addHour = getFlagVariableAsNum('-h', inputsArray) || 0;
-let addMin = getFlagVariableAsNum('-m', inputsArray) || 0;
-let addSec = getFlagVariableAsNum('-s', inputsArray) || 0;
+const addDay = getFlagVariableAsNum('-d', inputsArray) || 0;
+const addHour = getFlagVariableAsNum('-h', inputsArray) || 0;
+const addMin = getFlagVariableAsNum('-m', inputsArray) || 0;
+const addSec = getFlagVariableAsNum('-s', inputsArray) || 0;
 if (addDay + addHour + addMin + addSec === 0){
   console.log('no time set, exiting...');
   process.exit(0);
